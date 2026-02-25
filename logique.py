@@ -12,12 +12,20 @@ class Joueur :
 
 class Barriere:
 
-    def __init__(self,t1,t2,t3,t4,horizontal):
+    def __init__(self,t1,t2,t3,t4,direct):
         self.NO=t1
         self.NE=t2
         self.SO=t3
         self.SE=t4
-        self.horizontal=horizontal
+        self.direction=direct
+    
+    def changerdirection(self):
+        if (self.direction=="horizontal"):
+            self.direction="vertical"
+        if (self.direction=="vertical"):
+            self.direction="horizontal"
+    
+
 
     
 
@@ -31,7 +39,7 @@ class Jeu:
         self.j2= Joueur(0,2,4,0)
         self.initGraphe()
         self.listeBarrieres=[]
-        self.tour="j1"
+        self.tour=self.j1
 
     def initGraphe(self):
         g=Graph()
@@ -47,21 +55,32 @@ class Jeu:
     def casserArretes(self,n1, n2):
         self.graphe.remove_edge(n1,n2)
 
-    def poserBarriere(self,t1,t2,t3,t4,horizontal):
-        if (horizontal):
-            self.casserArretes(t1,t3)
-            self.casserArretes(t2,t4)
+    def ajouterArretes(self,n1,n2):
+        self.graphe.add_edge(n1,n2)
+
+    def poserBarriere(self,barriere):
+        if (barriere.direction=="horizontal"):
+            self.casserArretes(barriere.NO,barriere.SO)
+            self.casserArretes(barriere.NE,barriere.SE)
         else:
-            self.casserArretes(t1,t2)
-            self.casserArretes(t3,t4) 
-        barriere = Barriere(t1,t2,t3,t4,horizontal)
+            self.casserArretes(barriere.NO,barriere.NE)
+            self.casserArretes(barriere.SO,barriere.SE) 
         self.listeBarrieres.append(barriere)
+
+    
 
 
 
     def dijikstra(self,case1, case2):
         distance = shortest_path_length(self.graphe, source=case1, target=case2)
         return distance
+    
+    def changerJoueur(self):
+        self.tour=self.j2 if self.tour==self.j1 else self.j1
+
+    
+
+     
     
 
     
