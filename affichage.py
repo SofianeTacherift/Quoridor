@@ -82,7 +82,21 @@ class FenetreJeu:
             elif joueur.modeBarriere:
                 match (even.keysym.lower()):
                     case "d":
+                        barriereEnCours.deplacerX(1)
+                        return
+                    case "q"
+                        barriereEnCours.deplacerX(-1)
+                        return
+                    case "s"
+                        barriereEnCours.deplacerY(1)
+                        return
+                    case "z"
+                        barriereEnCours.deplacerX(-1)
+                        return
                         
+                self.redessiner()
+
+
             
 
 

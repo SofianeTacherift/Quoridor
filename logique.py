@@ -10,20 +10,25 @@ class Joueur :
         self.caseY=y
         self.modeBarriere=False
     
-    
     def deplacerX(self, x):
-        if (self.caseX+x<0 or self.caseX+x>8):
-            return False
-        else:
-            self.caseX+=x 
+        caseAVerifier = self.NO if x < 0 else self.NE
+        if (caseAVerifier[1] + x >= 0 and caseAVerifier[1] + x <= 7):
+            self.NO = (self.NO[0], self.NO[1] + x)
+            self.NE = (self.NE[0], self.NE[1] + x)
+            self.SO = (self.SO[0], self.SO[1] + x)
+            self.SE = (self.SE[0], self.SE[1] + x)
             return True
+        return False
 
     def deplacerY(self, y):
-        if (self.caseY+y<0 or self.caseY+y>8):
-            return False
-        else:
-            self.caseY+=y 
+        caseAVerifier = self.NO if y < 0 else self.SO
+        if (caseAVerifier[0] + y >= 0 and caseAVerifier[0] + y <= 7):
+            self.NO = (self.NO[0] + y, self.NO[1])
+            self.NE = (self.NE[0] + y, self.NE[1])
+            self.SO = (self.SO[0] + y, self.SO[1])
+            self.SE = (self.SE[0] + y, self.SE[1])
             return True
+        return False
     
 
 class Barriere:
