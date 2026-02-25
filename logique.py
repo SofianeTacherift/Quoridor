@@ -9,6 +9,22 @@ class Joueur :
         self.caseX=x
         self.caseY=y
         self.modeBarriere=False
+    
+    
+    def deplacerX(self, x):
+        if (self.caseX+x<0 or self.caseX+x>8):
+            return False
+        else:
+            self.caseX+=x 
+            return True
+
+    def deplacerY(self, y):
+        if (self.caseY+y<0 or self.caseY+y>8):
+            return False
+        else:
+            self.caseY+=y 
+            return True
+    
 
 class Barriere:
 
@@ -25,7 +41,25 @@ class Barriere:
         elif (self.direction=="vertical"):
             self.direction="horizontal"
     
+    def deplacerX(self, x):
+        caseAVerifier = self.NO if x < 0 else self.NE
+        if (caseAVerifier[0] + x >= 0 and caseAVerifier[0] + x <= 8):
+            self.NO = (self.NO[0] + x, self.NO[1])
+            self.NE = (self.NE[0] + x, self.NE[1])
+            self.SO = (self.SO[0] + x, self.SO[1])
+            self.SE = (self.SE[0] + x, self.SE[1])
+            return True
+        return False
 
+    def deplacerY(self, y):
+        caseAVerifier = self.NO if y < 0 else self.SO
+        if (caseAVerifier[1] + y >= 0 and caseAVerifier[1] + y <= 8):
+            self.NO = (self.NO[0], self.NO[1] + y)
+            self.NE = (self.NE[0], self.NE[1] + y)
+            self.SO = (self.SO[0], self.SO[1] + y)
+            self.SE = (self.SE[0], self.SE[1] + y)
+            return True
+        return False    
 
     
 
@@ -69,6 +103,8 @@ class Jeu:
 
         if ( not self.cheminPossibleJoueur(self.j1) or not self.cheminPossibleJoueur(self.j2)):
             self.casserBarriere(barriere)
+            return False 
+        return True
 
     def casserBarriere(self,barriere):
         if (barriere.direction=="horizontal"):
@@ -78,6 +114,13 @@ class Jeu:
             self.ajouterArretes(barriere.NO,barriere.NE)
             self.ajouterArretes(barriere.SO,barriere.SE) 
         self.listeBarrieres.remove(barriere)
+    
+    def deplacerJoueurX(self, x):
+        return self.tour.deplacerX(x)
+
+    def deplacerJoueurY(self,y):
+        return self.tour.deplacerY(y)
+        
 
     
 

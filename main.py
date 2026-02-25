@@ -1,5 +1,5 @@
 from logique import *
-from graphique import *
+from affichage import *
 from tkinter import *
 from networkx import *
 
