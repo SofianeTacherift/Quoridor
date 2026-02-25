@@ -22,7 +22,7 @@ class Barriere:
     def changerdirection(self):
         if (self.direction=="horizontal"):
             self.direction="vertical"
-        if (self.direction=="vertical"):
+        elif (self.direction=="vertical"):
             self.direction="horizontal"
     
 
@@ -64,19 +64,48 @@ class Jeu:
             self.casserArretes(barriere.NE,barriere.SE)
         else:
             self.casserArretes(barriere.NO,barriere.NE)
-            self.casserArretes(barriere.SO,barriere.SE) 
+            self.casserArretes(barriere.SO,barriere.SE)         
         self.listeBarrieres.append(barriere)
+
+        if ( not self.cheminPossibleJoueur(self.j1) or not self.cheminPossibleJoueur(self.j2)):
+            self.casserBarriere(barriere)
+
+    def casserBarriere(self,barriere):
+        if (barriere.direction=="horizontal"):
+            self.ajouterArretes(barriere.NO,barriere.SO)
+            self.ajouterArretes(barriere.NE,barriere.SE)
+        else:
+            self.ajouterArretes(barriere.NO,barriere.NE)
+            self.ajouterArretes(barriere.SO,barriere.SE) 
+        self.listeBarrieres.remove(barriere)
 
     
 
 
 
-    def dijikstra(self,case1, case2):
-        distance = shortest_path_length(self.graphe, source=case1, target=case2)
-        return distance
+    def dijkstra(self, case1, case2):
+        try:
+            return shortest_path_length(self.graphe, case1, case2)
+        except NetworkXNoPath:
+            return -1
+    
+    def cheminPossibleJoueur(self, joueur):
+        i=9 if joueur==self.j2 else 0
+        for j in range(9):
+            if (self.dijkstra((joueur.caseY, joueur.caseX),(i,j))!=-1):
+                return True 
+        return False
+    
+
+            
+
+
+
+
     
     def changerJoueur(self):
         self.tour=self.j2 if self.tour==self.j1 else self.j1
+    
 
     
 
