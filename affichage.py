@@ -38,18 +38,27 @@ class FenetreJeu:
 
         if (joueur==self.jeu.j1): 
 
-            if event.keysym.lower() == "e" and joueur.barrierePosee==False:
+            if event.keysym.lower() == "e":
                 joueur.modeBarriere = not joueur.modeBarriere
-                self.barriereEnCours=Barriere((3,2),(3,3),(4,2),(4,3),"horizontal") if joueur.modeBarriere else None
-                self.redessiner()
-                return
+                if (joueur.modeBarriere):
+                    self.barriereEnCours=Barriere((3,2),(3,3),(4,2),(4,3),"horizontal") if joueur.modeBarriere else None
+                    self.redessiner()
+                    return
+                else:
+                    self.barriereEnCours=None
 
             if joueur.modeBarriere and event.keysym.lower() == "a":
                 if self.jeu.poserBarriere(self.barriereEnCours):
                     joueur.modeBarriere=False
                     self.barriereEnCours=None
+                    self.jeu.changerJoueur()
                     self.redessiner()
+                    self.tourBot()
+
                 return
+            
+            if joueur.modeBarriere and event.keysym.lower() == "r":
+                self.barriereEnCours.changerDirection()
 
 
             if not joueur.modeBarriere:
@@ -131,27 +140,16 @@ class FenetreJeu:
         # Joueur 1
         x = self.jeu.j1.caseX * cell_w + cell_w/2
         y = self.jeu.j1.caseY * cell_h + cell_h/2
-        self.canvas.create_oval(x-self.hauteur/18+5, y-self.hauteur/18+5, x+self.hauteur/18-5, y+self.hauteur/18-5, fill="red")
+        self.canvas.create_oval(x-self.hauteur/18+5, y-self.hauteur/18+5, x+self.hauteur/18-5, y+self.hauteur/18-5, fill="blue")
 
         x = self.jeu.j2.caseX * cell_w + cell_w/2
         y = self.jeu.j2.caseY * cell_h + cell_h/2
-        self.canvas.create_oval(x-self.hauteur/18+5, y-self.hauteur/18+5, x+self.hauteur/18-5, y+self.hauteur/18-5, fill="blue")
+        self.canvas.create_oval(x-self.hauteur/18+5, y-self.hauteur/18+5, x+self.hauteur/18-5, y+self.hauteur/18-5, fill="red")
 
     def dessiner_barrieres(self):
         cell_w = self.largeur / 9
         cell_h = self.hauteur / 9
 
-        if (self.barriereEnCours):
-            if self.barriereEnCours.direction=="horizontal":
-                x1 = self.barriereEnCours.NO[1] * cell_w
-                y1 = self.barriereEnCours.NO[0] * cell_h + cell_h
-                x2 = self.barriereEnCours.NE[1] * cell_w + cell_w
-                self.canvas.create_rectangle(x1, y1-5, x2, y1+5, fill="brown")
-            else:
-                x1 = self.barriereEnCours.NO[1] * cell_w + cell_w
-                y1 = self.barriereEnCours.NO[0] * cell_h
-                y2 = self.barriereEnCours.SO[0] * cell_h + cell_h
-                self.canvas.create_rectangle(x1-5, y1, x1+5, y2, fill="brown")
 
 
         for b in self.jeu.listeBarrieres:
@@ -165,4 +163,16 @@ class FenetreJeu:
                 y1 = b.NO[0] * cell_h
                 y2 = b.SO[0] * cell_h + cell_h
                 self.canvas.create_rectangle(x1-5, y1, x1+5, y2, fill="brown")
+
+        if (self.barriereEnCours):
+            if self.barriereEnCours.direction=="horizontal":
+                x1 = self.barriereEnCours.NO[1] * cell_w
+                y1 = self.barriereEnCours.NO[0] * cell_h + cell_h
+                x2 = self.barriereEnCours.NE[1] * cell_w + cell_w
+                self.canvas.create_rectangle(x1, y1-5, x2, y1+5, fill="blue")
+            else:
+                x1 = self.barriereEnCours.NO[1] * cell_w + cell_w
+                y1 = self.barriereEnCours.NO[0] * cell_h
+                y2 = self.barriereEnCours.SO[0] * cell_h + cell_h
+                self.canvas.create_rectangle(x1-5, y1, x1+5, y2, fill="blue")
     

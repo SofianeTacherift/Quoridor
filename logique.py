@@ -9,7 +9,6 @@ class Joueur :
         self.caseX=x
         self.caseY=y
         self.modeBarriere=False
-        self.barrierePosee=False
     
     
     def deplacerX(self, x):
@@ -36,7 +35,7 @@ class Barriere:
         self.SE=t4
         self.direction=direct
     
-    def changerdirection(self):
+    def changerDirection(self):
         if (self.direction=="horizontal"):
             self.direction="vertical"
         elif (self.direction=="vertical"):
@@ -98,21 +97,30 @@ class Jeu:
     def ajouterArretes(self,n1,n2):
         self.graphe.add_edge(n1,n2)
 
-    def poserBarriere(self,barriere):
-
-        if (barriere.direction=="horizontal"):
-            res = self.casserArretes(barriere.NO,barriere.SO) and self.casserArretes(barriere.NE,barriere.SE)
+    def poserBarriere(self, barriere):
+        if barriere.direction == "horizontal":
+            r1 = self.casserArretes(barriere.NO, barriere.SO)
+            r2 = self.casserArretes(barriere.NE, barriere.SE)
+            if not r1 or not r2:
+                if r1: self.ajouterArretes(barriere.NO, barriere.SO)
+                if r2: self.ajouterArretes(barriere.NE, barriere.SE)
+                return False
         else:
-            res = self.casserArretes(barriere.NO,barriere.NE) and self.casserArretes(barriere.SO,barriere.SE)
+            r1 = self.casserArretes(barriere.NO, barriere.NE)
+            r2 = self.casserArretes(barriere.SO, barriere.SE)
+            if not r1 or not r2:
+                if r1: self.ajouterArretes(barriere.NO, barriere.NE)
+                if r2: self.ajouterArretes(barriere.SO, barriere.SE)
+                return False
 
-        if not res: return res
         self.listeBarrieres.append(barriere)
-    
-        if ( not self.cheminPossibleJoueur(self.j1) or not self.cheminPossibleJoueur(self.j2)):
+
+        if not self.cheminPossibleJoueur(self.j1) or not self.cheminPossibleJoueur(self.j2):
             self.casserBarriere(barriere)
-            self.tour.barrierePosee=False
-            return False 
-        self.tour.barrierePosee=True
+            self.tour.barrierePosee = False
+            return False
+
+        self.tour.barrierePosee = True
         return True
 
     def casserBarriere(self,barriere):
@@ -124,11 +132,17 @@ class Jeu:
             self.ajouterArretes(barriere.SO,barriere.SE) 
         self.listeBarrieres.remove(barriere)
     
-    def deplacerJoueurX(self, x):
-        return self.tour.deplacerX(x)
+    def deplacerJoueurX(self, pasX):
+        x=self.tour.caseX
+        y=self.tour.caseY
+        if not self.graphe.has_edge((y,x),(y,x+pasX)): return False
+        return self.tour.deplacerX(pasX)
 
-    def deplacerJoueurY(self,y):
-        return self.tour.deplacerY(y)
+    def deplacerJoueurY(self,pasY):
+        x=self.tour.caseX
+        y=self.tour.caseY
+        if not self.graphe.has_edge((y,x),(y+pasY,x)): return False
+        return self.tour.deplacerY(pasY)
 
 
     def dijkstra(self, case1, case2):
@@ -193,7 +207,6 @@ class Jeu:
         meilleureBarriere=None
         for i in range(8):
             for j in range(8):
-                print((i,j),(i,j+1),(i+1,j),(i+1, j+1) )
                 NO=(i,j)
                 NE=(i,j+1)
                 SO=(i+1,j)
@@ -204,52 +217,53 @@ class Jeu:
                 chemin=cheminEtScore[0]
                 score=cheminEtScore[1]
                 if (chemin is None): continue
-
                 if (meilleureBarriere is None) or (score>meilleureBarriere[2]):
-
                     meilleureBarriere=(barriereHorizontale,chemin,score)
+
+                barriereVerticale=Barriere(NO,NE,SO,SE,"vertical")
+                cheminEtScore=self.testerBarriere(barriereVerticale)
+                chemin=cheminEtScore[0]
+                score=cheminEtScore[1]
+                if (chemin is None): continue
+                if (meilleureBarriere is None) or (score>meilleureBarriere[2]):
+                    meilleureBarriere=(barriereVerticale,chemin,score)
+                
         return meilleureBarriere
 
 
     def jouerBot(self):
-        if not self.tour==self.j2: return 
+        if not self.tour == self.j2: return
 
-        meilleureBarriere,chemin,score=self.meilleureBarriereBot()
-        print(meilleureBarriere, chemin)
-        self.poserBarriere(meilleureBarriere)
-        prochaineCase=chemin[1]
-        diffX=prochaineCase[1]-self.j2.caseX
-        diffY=prochaineCase[0]-self.j2.caseY
-        if (diffX!=0):
-            self.deplacerJoueurX(diffX)
-        elif diffY!=0:
-            self.deplacerJoueurY(diffY)
+        resultat = self.meilleureBarriereBot()
+        if resultat is not None:
+            meilleureBarriere, chemin, score = resultat
+            if score > 0:
+                self.poserBarriere(meilleureBarriere)
+
+        posJoueur = (self.j2.caseY, self.j2.caseX)
+        meilleurChemin = None
+        for k in range(9):
+            try:
+                chemin = dijkstra_path(self.graphe, posJoueur, (8, k))
+                if meilleurChemin is None or len(chemin) < len(meilleurChemin):
+                    meilleurChemin = chemin
+            except NetworkXNoPath:
+                continue
+
+        if meilleurChemin and len(meilleurChemin) > 1:
+            prochaineCase = meilleurChemin[1]
+            diffX = prochaineCase[1] - self.j2.caseX
+            diffY = prochaineCase[0] - self.j2.caseY
+            if diffX != 0:
+                self.deplacerJoueurX(diffX)
+            elif diffY != 0:
+                self.deplacerJoueurY(diffY)
+
         self.changerJoueur()
-    
-
-
-    
 
 
 
 
-
-
-
-
-
-
-
-    
-
-    
-
-     
-    
-
-    
-     
-    
 
 
 
@@ -258,6 +272,23 @@ class Jeu:
 
 
         
+
+        
+
+        
+        
+
+        
+        
+        
+
+
+
+
+
+
+
+            
 
 
         
