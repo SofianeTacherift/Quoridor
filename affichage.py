@@ -79,7 +79,7 @@ class FenetreJeu:
                 if (deplacement):
                     self.jeu.changerJoueur()
                     self.redessiner()
-                    self.meilleuresPossibilites()
+                    self.tourBot()
             
             elif joueur.modeBarriere:
                 match (event.keysym.lower()):
@@ -99,10 +99,10 @@ class FenetreJeu:
 
                 self.redessiner()
 
-    def meilleuresPossibilites(self):
-        self.jeu.meilleuresPossibilites()
+    def tourBot(self):
+        self.jeu.jouerBot()
+        self.redessiner()
             
-
 
 
     def redessiner(self):
