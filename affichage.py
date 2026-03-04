@@ -38,15 +38,15 @@ class FenetreJeu:
 
         if (joueur==self.jeu.j1): 
 
-            if event.keysym.lower() == "e":
+            if event.keysym.lower() == "e" and joueur.barrierePosee==False:
                 joueur.modeBarriere = not joueur.modeBarriere
                 self.barriereEnCours=Barriere((3,2),(3,3),(4,2),(4,3),"horizontal") if joueur.modeBarriere else None
                 self.redessiner()
                 return
 
             if joueur.modeBarriere and event.keysym.lower() == "a":
-                if self.jeu.ajouterBarriere(barriere):
-                    self.jeu.changerJoueur()
+                if self.jeu.poserBarriere(self.barriereEnCours):
+                    joueur.modeBarriere=False
                     self.barriereEnCours=None
                     self.redessiner()
                 return
@@ -64,6 +64,7 @@ class FenetreJeu:
                     deplacement=self.jeu.deplacerJoueurY(-1)
 
 
+
                 elif event.keysym.lower() == "s": 
                     deplacement=self.jeu.deplacerJoueurY(1)
 
@@ -78,25 +79,28 @@ class FenetreJeu:
                 if (deplacement):
                     self.jeu.changerJoueur()
                     self.redessiner()
+                    self.meilleuresPossibilites()
             
             elif joueur.modeBarriere:
-                match (even.keysym.lower()):
+                match (event.keysym.lower()):
+
                     case "d":
-                        barriereEnCours.deplacerX(1)
-                        return
-                    case "q"
-                        barriereEnCours.deplacerX(-1)
-                        return
-                    case "s"
-                        barriereEnCours.deplacerY(1)
-                        return
-                    case "z"
-                        barriereEnCours.deplacerX(-1)
-                        return
-                        
+                        self.barriereEnCours.deplacerX(1)
+
+                    case "q":
+                        self.barriereEnCours.deplacerX(-1)
+
+                    case "s":
+                        self.barriereEnCours.deplacerY(1)
+
+                    case "z":
+                        self.barriereEnCours.deplacerY(-1)
+                    
+
                 self.redessiner()
 
-
+    def meilleuresPossibilites(self):
+        self.jeu.meilleuresPossibilites()
             
 
 
@@ -131,7 +135,7 @@ class FenetreJeu:
 
         x = self.jeu.j2.caseX * cell_w + cell_w/2
         y = self.jeu.j2.caseY * cell_h + cell_h/2
-        self.canvas.create_oval(x-self.hauteur/18, y-self.hauteur/18, x+self.hauteur/18, y+self.hauteur/18, fill="blue")
+        self.canvas.create_oval(x-self.hauteur/18+5, y-self.hauteur/18+5, x+self.hauteur/18-5, y+self.hauteur/18-5, fill="blue")
 
     def dessiner_barrieres(self):
         cell_w = self.largeur / 9
@@ -139,25 +143,26 @@ class FenetreJeu:
 
         if (self.barriereEnCours):
             if self.barriereEnCours.direction=="horizontal":
-                x1 = self.barriereEnCours.NO[0] * cell_w
-                y1 = self.barriereEnCours.NO[1] * cell_h + cell_h
-                x2 = self.barriereEnCours.NE[0] * cell_w + cell_w
+                x1 = self.barriereEnCours.NO[1] * cell_w
+                y1 = self.barriereEnCours.NO[0] * cell_h + cell_h
+                x2 = self.barriereEnCours.NE[1] * cell_w + cell_w
                 self.canvas.create_rectangle(x1, y1-5, x2, y1+5, fill="brown")
             else:
-                x1 = self.barriereEnCours.NO[0] * cell_w + cell_w
-                y1 = self.barriereEnCours.NO[1] * cell_h
-                y2 = self.barriereEnCours.SO[1] * cell_h + cell_h
+                x1 = self.barriereEnCours.NO[1] * cell_w + cell_w
+                y1 = self.barriereEnCours.NO[0] * cell_h
+                y2 = self.barriereEnCours.SO[0] * cell_h + cell_h
                 self.canvas.create_rectangle(x1-5, y1, x1+5, y2, fill="brown")
 
 
         for b in self.jeu.listeBarrieres:
             if b.direction=="horizontal":
-                x1 = b.NO[0] * cell_w
-                y1 = b.NO[1] * cell_h + cell_h
-                x2 = b.NE[0] * cell_w + cell_w
+                x1 = b.NO[1] * cell_w
+                y1 = b.NO[0] * cell_h + cell_h
+                x2 = b.NE[1] * cell_w + cell_w
                 self.canvas.create_rectangle(x1, y1-5, x2, y1+5, fill="brown")
             else:
-                x1 = b.NO[0] * cell_w + cell_w
-                y1 = b.NO[1] * cell_h
-                y2 = b.SO[1] * cell_h + cell_h
+                x1 = b.NO[1] * cell_w + cell_w
+                y1 = b.NO[0] * cell_h
+                y2 = b.SO[0] * cell_h + cell_h
                 self.canvas.create_rectangle(x1-5, y1, x1+5, y2, fill="brown")
+    
