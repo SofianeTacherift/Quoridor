@@ -6,6 +6,19 @@ Implémentation du jeu de plateau **Quoridor** en Python, avec un bot adversaire
 
 ---
 
+## Contrôles
+
+| Touche | Action |
+|--------|--------|
+| `Z` | Avancer |
+| `S` | Reculer |
+| `Q` | Aller à gauche |
+| `D` | Aller à droite |
+| `E` | Activer / désactiver le mode barrière |
+| `A` | Placer la barrière |
+
+---
+
 ## Utilisation des graphes
 
 C'est le cœur du projet. Tout repose sur un graphe NetworkX qui modélise la grille.
@@ -33,13 +46,6 @@ def initGraphe(self):
 Ce choix de modélisation permet de traiter naturellement les déplacements et les barrières comme des opérations sur le graphe.
 
 ---
-# touches
-Z déplacement devant <br>
-Q déplacement à gauche <br>
-D déplacement à droite <br>
-S déplacement en bas <br>
-E mode barrière <br>
-A placer barrière <br>
 
 ### Les barrières = suppression d'arêtes
 
