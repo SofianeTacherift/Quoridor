@@ -34,12 +34,12 @@ Ce choix de modélisation permet de traiter naturellement les déplacements et l
 
 ---
 # touches
-Z déplacement devant
-Q déplacement à gauche
-D déplacement à droite
-S déplacement en bas
-E mode barrière
-A placer barrière
+Z déplacement devant <br>
+Q déplacement à gauche <br>
+D déplacement à droite <br>
+S déplacement en bas <br>
+E mode barrière <br>
+A placer barrière <br>
 
 ### Les barrières = suppression d'arêtes
 
