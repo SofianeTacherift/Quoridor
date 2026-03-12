@@ -133,6 +133,8 @@ class Jeu:
 
         self.listeBarrieres.append(barriere)
 
+
+
         if not self.cheminPossibleJoueur(self.j1) or not self.cheminPossibleJoueur(self.j2):
             self.casserBarriere(barriere)
             self.tour.barrierePosee = False
@@ -181,8 +183,10 @@ class Jeu:
             return -1
     
     def cheminPossibleJoueur(self, joueur):
-        i=8 if joueur==self.j1 else 0
+        i=0 if joueur==self.j1 else 8
         for j in range(9):
+
+
             if (self.dijkstra((joueur.caseY, joueur.caseX),(i,j))!=-1):
                 return True 
         return False

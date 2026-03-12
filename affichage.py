@@ -53,6 +53,9 @@ class FenetreJeu:
     def on_key(self, event):
 
         joueur = self.jeu.tour
+
+        if (event.keysym.lower()=="t"):
+            print(self.jeu.cheminPossibleJoueur(self.jeu.j1))
    
         if self.jeu.gagnant:
             return
