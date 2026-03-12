@@ -132,16 +132,23 @@ class Jeu:
             self.ajouterArretes(barriere.SO,barriere.SE) 
         self.listeBarrieres.remove(barriere)
     
+    def caseOccupee(self, y ,x):
+        return (self.j1.caseX == x and self.j1.caseY == y) or (self.j2.caseX == x and self.j2.caseY == y)
+
     def deplacerJoueurX(self, pasX):
         x=self.tour.caseX
         y=self.tour.caseY
         if not self.graphe.has_edge((y,x),(y,x+pasX)): return False
+        if (self.caseOccupee(y,x+pasX)) :
+            return False
         return self.tour.deplacerX(pasX)
 
     def deplacerJoueurY(self,pasY):
         x=self.tour.caseX
         y=self.tour.caseY
         if not self.graphe.has_edge((y,x),(y+pasY,x)): return False
+        if (self.caseOccupee(y+pasY,x)) :
+            return False
         return self.tour.deplacerY(pasY)
 
 

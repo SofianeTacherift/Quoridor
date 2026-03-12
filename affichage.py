@@ -45,7 +45,10 @@ class FenetreJeu:
                     self.redessiner()
                     return
                 else:
+                    
                     self.barriereEnCours=None
+                    joueur.modeBarriere=False
+                    self.redessiner()
 
             if joueur.modeBarriere and event.keysym.lower() == "a":
                 if self.jeu.poserBarriere(self.barriereEnCours):
