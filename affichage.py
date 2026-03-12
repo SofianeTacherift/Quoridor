@@ -35,6 +35,10 @@ class FenetreJeu:
     def on_key(self, event):
 
         joueur = self.jeu.tour
+        print(self.jeu.gagnant)
+
+        if self.jeu.gagnant:
+            return
 
         if (joueur==self.jeu.j1): 
 

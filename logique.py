@@ -9,8 +9,11 @@ class Joueur :
         self.caseX=x
         self.caseY=y
         self.modeBarriere=False
-    
-    
+        self.victoire=False
+
+    def __str__(self):
+        return "joueur "+str(self.id)
+
     def deplacerX(self, x):
         if (self.caseX+x<0 or self.caseX+x>8):
             return False
@@ -71,12 +74,27 @@ class Jeu:
 
     
     def __init__(self):
-        self.j1 = Joueur(0,1,4,8)
-        self.j2= Joueur(0,2,4,0)
+        self.j1 = Joueur(1,1,4,8)
+        self.j2= Joueur(2,2,4,0)
         self.initGraphe()
         self.listeBarrieres=[]
         self.tour=self.j1
         self.gagnant=None
+    
+
+    def verifierVictoire(self):
+        for j in range(9):
+            if (self.joueurCase(0,j)==self.j1):
+                return self.j1
+            if self.joueurCase(8,j)==self.j2:
+                return self.j2
+            
+
+    def joueurCase(self,i,j):
+        if (self.j1.caseX==j and self.j1.caseY==i):
+            return self.j1
+        if  self.j2.caseX==j and self.j2.caseY==i:
+            return self.j2 
 
     def initGraphe(self):
         g=Graph()
@@ -141,7 +159,9 @@ class Jeu:
         if not self.graphe.has_edge((y,x),(y,x+pasX)): return False
         if (self.caseOccupee(y,x+pasX)) :
             return False
-        return self.tour.deplacerX(pasX)
+        resultat = self.tour.deplacerX(pasX)
+        self.gagnant=self.verifierVictoire()
+        return resultat
 
     def deplacerJoueurY(self,pasY):
         x=self.tour.caseX
@@ -149,7 +169,9 @@ class Jeu:
         if not self.graphe.has_edge((y,x),(y+pasY,x)): return False
         if (self.caseOccupee(y+pasY,x)) :
             return False
-        return self.tour.deplacerY(pasY)
+        resultat = self.tour.deplacerY(pasY)
+        self.gagnant=self.verifierVictoire()
+        return resultat
 
 
     def dijkstra(self, case1, case2):
