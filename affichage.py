@@ -5,6 +5,7 @@ class FenetreJeu:
 
     def __init__(self, jeu):
         self.jeu = jeu
+
         
 
         self.root = tk.Tk()
@@ -16,6 +17,23 @@ class FenetreJeu:
         self.canvas.bind("<Button-1>", self.on_click)
         self.root.bind("<Key>", self.on_key)
         self.canvas.bind("<Configure>", self.on_resize)
+
+        self.bandeau = tk.Frame(self.root, bg="#222", height=60)
+        self.bandeau.pack(fill="x")
+
+        self.labelTouches = tk.Label(self.bandeau,text="ZQSD : déplacement - E : mode barrière - R : tourner barrière - A : placer barrière", 
+                                     bg="#222", fg="white",
+                                     font=("Arial",  18))
+        self.labelTouches.pack(side="bottom")
+
+        self.labelStatus = tk.Label(self.bandeau, text="", 
+                                    font=("Arial", 18, "bold"), bg="#222", fg="white")
+        self.labelStatus.pack(side="left", padx=20, pady=10)
+
+        self.boutonRejouer = tk.Button(self.bandeau, text="Rejouer", 
+                                        font=("Arial", 14), command=self.rejouer,
+                                        bg="#444", fg="white", relief="flat", padx=10)
+        self.boutonRejouer.pack(side="right", padx=20, pady=10)
 
         self.largeur = 1
         self.hauteur = 1
@@ -35,8 +53,7 @@ class FenetreJeu:
     def on_key(self, event):
 
         joueur = self.jeu.tour
-        print(self.jeu.gagnant)
-
+   
         if self.jeu.gagnant:
             return
 
@@ -93,6 +110,9 @@ class FenetreJeu:
 
 
                 if (deplacement):
+                    if (self.jeu.gagnant):
+                        self.redessiner()
+                        return
                     self.jeu.changerJoueur()
                     self.redessiner()
                     self.tourBot()
@@ -122,6 +142,8 @@ class FenetreJeu:
 
 
     def redessiner(self):
+        if self.jeu.gagnant:
+            self.afficher_gagnant()
         self.canvas.delete("all")
         self.dessiner_grille()
         self.dessiner_barrieres()
@@ -183,3 +205,14 @@ class FenetreJeu:
                 y2 = self.barriereEnCours.SO[0] * cell_h + cell_h
                 self.canvas.create_rectangle(x1-5, y1, x1+5, y2, fill="blue")
     
+
+    def rejouer(self):
+        self.jeu.__init__()
+        self.barriereEnCours = None
+        self.labelStatus.config(text="À toi de jouer !", fg="white")
+        self.redessiner()
+
+    def afficher_gagnant(self):
+        nom = "Joueur 1" if self.jeu.gagnant == self.jeu.j1 else "Bot"
+        couleur = "blue" if self.jeu.gagnant == self.jeu.j1 else "red"
+        self.labelStatus.config(text=f"{nom} a gagné !", fg=couleur)

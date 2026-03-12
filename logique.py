@@ -270,10 +270,16 @@ class Jeu:
                 self.poserBarriere(meilleureBarriere)
 
         posJoueur = (self.j2.caseY, self.j2.caseX)
+
+        posEnnemi = (self.j1.caseY, self.j1.caseX)
+
+
         meilleurChemin = None
         for k in range(9):
             try:
                 chemin = dijkstra_path(self.graphe, posJoueur, (8, k))
+                if (len(chemin)>=2 and posEnnemi == chemin[1]): 
+                    continue
                 if meilleurChemin is None or len(chemin) < len(meilleurChemin):
                     meilleurChemin = chemin
             except NetworkXNoPath:
