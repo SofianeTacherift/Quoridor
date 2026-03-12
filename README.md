@@ -15,7 +15,9 @@ Implémentation du jeu de plateau **Quoridor** en Python, avec un bot adversaire
 | `Q` | Aller à gauche |
 | `D` | Aller à droite |
 | `E` | Activer / désactiver le mode barrière |
+| `R` | Tourner la barrière |
 | `A` | Placer la barrière |
+
 
 ---
 
