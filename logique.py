@@ -265,69 +265,82 @@ class Jeu:
 
 
     def jouerBot(self):
-        if not self.tour == self.j2: return
+        if self.tour != self.j2:
+            return
 
-        resultat = self.meilleureBarriereBot()
-        if resultat is not None:
-            meilleureBarriere, chemin, score = resultat
-            if score > 0:
-                self.poserBarriere(meilleureBarriere)
+        def calculScore():
+            posBot = (self.j2.caseY, self.j2.caseX)
+            posAdv = (self.j1.caseY, self.j1.caseX)
 
-        posJoueur = (self.j2.caseY, self.j2.caseX)
+            distBot = None
+            for k in range(9):
+                try:
+                    chemin = dijkstra_path(self.graphe, posBot, (8, k))
+                    if distBot is None or len(chemin) < distBot:
+                        distBot = len(chemin)
+                except:
+                    pass
 
-        posEnnemi = (self.j1.caseY, self.j1.caseX)
+            distAdv = None
+            for k in range(9):
+                try:
+                    chemin = dijkstra_path(self.graphe, posAdv, (0, k))
+                    if distAdv is None or len(chemin) < distAdv:
+                        distAdv = len(chemin)
+                except:
+                    pass
 
+            if distBot is None or distAdv is None:
+                return -999
+            return distAdv - distBot
 
-        meilleurChemin = None
-        for k in range(9):
-            try:
-                chemin = dijkstra_path(self.graphe, posJoueur, (8, k))
-                if (len(chemin)>=2 and posEnnemi == chemin[1]): 
-                    continue
-                if meilleurChemin is None or len(chemin) < len(meilleurChemin):
-                    meilleurChemin = chemin
-            except NetworkXNoPath:
+        meilleurScoreDep = -999
+        meilleurCoup = None
+
+        directions = [(1,0), (-1,0), (0,1), (0,-1)]
+
+        for dx, dy in directions:
+            x = self.j2.caseX
+            y = self.j2.caseY
+
+            nx = x + dx
+            ny = y + dy
+
+            if nx < 0 or nx > 8 or ny < 0 or ny > 8:
                 continue
 
-        if meilleurChemin and len(meilleurChemin) > 1:
-            prochaineCase = meilleurChemin[1]
-            diffX = prochaineCase[1] - self.j2.caseX
-            diffY = prochaineCase[0] - self.j2.caseY
-            if diffX != 0:
-                self.deplacerJoueurX(diffX)
-            elif diffY != 0:
-                self.deplacerJoueurY(diffY)
+            if not self.graphe.has_edge((y, x), (ny, nx)):
+                continue
+
+            if self.caseOccupee(ny, nx):
+                continue
+
+            self.j2.caseX = nx
+            self.j2.caseY = ny
+
+            score = calculScore()
+
+            self.j2.caseX = x
+            self.j2.caseY = y
+
+            if score > meilleurScoreDep:
+                meilleurScoreDep = score
+                meilleurCoup = (dx, dy)
+
+        meilleureBarriere = self.meilleureBarriereBot()
+        scoreBarriere = -999
+
+        if meilleureBarriere is not None:
+            scoreBarriere = meilleureBarriere[2]
+
+        if scoreBarriere > meilleurScoreDep and scoreBarriere > 0:
+            self.poserBarriere(meilleureBarriere[0])
+        else:
+            if meilleurCoup is not None:
+                dx, dy = meilleurCoup
+                if dx != 0:
+                    self.deplacerJoueurX(dx)
+                else:
+                    self.deplacerJoueurY(dy)
 
         self.changerJoueur()
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-
-        
-        
-
-        
-        
-        
-
-
-
-
-
-
-
-            
-
-
-        

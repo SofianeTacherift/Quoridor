@@ -10,6 +10,7 @@ class FenetreJeu:
 
         self.root = tk.Tk()
         self.root.title("Quoridor")
+    
 
         self.canvas = tk.Canvas(self.root, bg="white")
         self.canvas.pack(fill="both", expand=True)
